@@ -1,0 +1,17 @@
+{
+    "keyboard-remote-settings": {
+        "controlled_zone": {
+            "output_id": "1701dd554c31075ddafca09cfa98817f9570",
+            "name": "Bedroom"
+        },
+        "play_pause": "\\x20",
+        "previous": "-",
+        "next": "-"
+    },
+    "roonstate": {
+        "tokens": {
+            "c9ac7748-879a-4a0e-9f36-67bab3a3f456": "2ad3e56e-19c8-4a4f-a6e8-d9d304aec692"
+        },
+        "paired_core_id": "c9ac7748-879a-4a0e-9f36-67bab3a3f456"
+    }
+}
