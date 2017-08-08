@@ -53,7 +53,3 @@ generate a keypress.
     ```
 
     The extension should appear in Roon now. See Settings->Setup->Extensions and you should see it in the list. If you have multiple Roon Cores on the network, all of them should see it.
-
-## Notes
-* Automatic startup at system start is OS dependent and outside the scope of this document.
-* Since you probably want to have this extension running 24/7, the most logical place for installation is on the system on which your Roon Core is running.
