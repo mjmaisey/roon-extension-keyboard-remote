@@ -14,14 +14,11 @@
 
 "use strict";
 
-var RoonApi          = require("node-roon-api"),
-    RoonApiSettings  = require('node-roon-api-settings'),
-    RoonApiStatus    = require('node-roon-api-status'),
-    RoonApiTransport = require('node-roon-api-transport');
+const utf8 = require('utf8'),
+      Roon = require('./roon.js')
 
-const os = require("os");
-
-var utf8 = require('utf8');
+// Higher level wrapper around Roon API
+var roon = undefined;
 
 // Program states
 const STATE_INVALID = 0;                        // Shouldn't be in this after initialisation
@@ -29,21 +26,6 @@ const STATE_WAITING_FOR_PAIRING = 1;            // Waiting to pair with Roon Cor
 const STATE_PROGRAM = 2;                        // Key programming mode
 const STATE_AWAITING_ZONE_CONFIGURATION = 3;    // Keys programmed, but zone not configured
 const STATE_CONTROLLING_ZONE = 4;               // Accepting keypresses for zone control
-
-// Key types, descriptions, action methods
-const key_types = {
-    "play_pause" : { description: "Play/Pause", action: play_pause },
-    "previous"   : { description: "Previous"  , action: previous },
-    "next"       : { description: "Next"      , action: next }
-}
-
-// Roon zone bindings
-var core = undefined;
-var transport = undefined;
-var waiting_zones = {};
-
-// Key bindings and zone control settings, stored in and retrieved from Roon
-var keyboard_remote_settings = null;
 
 // Current program state
 var current_state = STATE_INVALID;
@@ -54,39 +36,20 @@ var programming_key_type = null;
 // When state = STATE_CONTROLLING_ZONE, holds lookup [decoded key_bytes->action method]
 var key_string_methods = null;
 
+// Key types, descriptions, action methods
+const key_types = {
+    "play_pause" : { description: "Play/Pause", action: transport_action("playpause") },
+    "previous"   : { description: "Previous"  , action: transport_action("previous") },
+    "next"       : { description: "Next"      , action: transport_action("next") }
+}
 
-var roon = new RoonApi({
-    extension_id:        'uk.co.maisey.keyboard-remote:' + os.hostname().split('.')[0],
-    display_name:        'Keyboard Remote (' + os.hostname().split('.')[0] + ')',
-    display_version:     '0.1.0',
-    publisher:           'Martin Maisey',
-    email:               'keyboard-remote@maisey.co.uk',
-    website:             'https://github.com/mjmaisey/roon-extension-keyboard-remote',
-    log_level:           'none',
+// Create the layout for the configuration screen
+function make_layout() {
 
-    core_paired: function(core_) {
-        core = core_;
-        transport = core.services.RoonApiTransport;
-        update_state();
-    },
-
-    core_unpaired: function(core_) {
-        core = undefined;
-        transport = undefined;
-        update_state();
-    }
-});
-
-function makelayout(settings) {
-
-    var l = {
-        values:    settings,
-        layout:    [],
-        has_error: false
-    };
+    var layout = [];
 
     // Create a config item allowing zone
-    l.layout.push({
+    layout.push({
         type:       "zone",
         title:      "Controlled zone",
         setting:    "controlled_zone"
@@ -94,25 +57,27 @@ function makelayout(settings) {
 
     // Create a config item for each key type
     Object.keys(key_types).forEach(function(key_type) {
-        l.layout.push({
+        layout.push({
             type: "string",
             title: key_types[key_type].description,
             setting: key_type
         })
     });
 
-    return l;
+    return layout;
+
 }
 
+// Update state based on whether we're paired, all keys are bound, and zone is configured
 function update_state() {
     current_state = STATE_INVALID;
 
-    if (core && transport) { // Are we paired?
+    if (roon.is_paired()) { // Are we paired?
 
         // See if we have any unbound keys
         var unbound_key_type = null;
         Object.keys(key_types).forEach(function(key_type) {
-            if (keyboard_remote_settings[key_type] === "") {
+            if (roon.get_setting(key_type) === "") {
                 unbound_key_type = key_type;
             }
         });
@@ -128,12 +93,12 @@ function update_state() {
             if (key_string_methods === null) {
                 key_string_methods = {};
                 Object.keys(key_types).forEach(function(key_type) {
-                    key_string_methods[keyboard_remote_settings[key_type]] = key_types[key_type].action;
+                    key_string_methods[roon.get_setting(key_type)] = key_types[key_type].action;
                 });
             }
 
             // Check if the controlled zone has been set
-            if (keyboard_remote_settings["controlled_zone"] == null) { // No, let's wait for it
+            if (roon.get_setting("controlled_zone") == null) { // No, let's wait for it
 
                 current_state = STATE_AWAITING_ZONE_CONFIGURATION;
 
@@ -152,9 +117,12 @@ function update_state() {
     }
 
     set_status_text();
+
 }
 
+// Update the status text in Roon based on the current state
 function set_status_text() {
+
     let status_text = null;
 
     switch (current_state) {
@@ -165,7 +133,7 @@ function set_status_text() {
             status_text = "Please set controlled zone in settings";
             break;
         case STATE_CONTROLLING_ZONE:
-            status_text = "Controlling zone " + keyboard_remote_settings["controlled_zone"].name;
+            status_text = "Controlling zone " + roon.get_setting("controlled_zone").name;
             break;
         case STATE_PROGRAM:
             status_text = "Program - press " + key_types[programming_key_type].description;
@@ -175,9 +143,10 @@ function set_status_text() {
             break;
     }
 
-    svc_status.set_status(status_text, false);
+    roon.set_status_text(status_text);
 }
 
+// Turn a received key into its unicode hex-escaped equivalent
 function hex_escape(string) {
     var length = string.length;
     var index = -1;
@@ -190,16 +159,11 @@ function hex_escape(string) {
     return result;
 }
 
-function display_brief_status(string) {
-    svc_status.set_status(string, false);
-    setTimeout(function() {
-        set_status_text();
-    }, 750);
-
-}
-
+// Handle key presses, with the action taken depending on whether we're in programming
+// state or control state
 function key_press(key) {
-    // ctrl-c ( end of text )
+
+    // If we receive ctrl-c, exit
     if ( key === '\u0003' ) {
         process.exit();
     }
@@ -207,91 +171,64 @@ function key_press(key) {
     switch (current_state) {
 
         case STATE_CONTROLLING_ZONE:
+
             let escaped_key_string = hex_escape(key);
 
+            // Retrieve method for the escaped key string and call it
             let key_string_method = key_string_methods[escaped_key_string];
             if (key_string_method) {
                 key_string_method();
-            } else {
-                display_brief_status("Received unknown key: " + hex_escape(key));
             }
 
             break;
 
         case STATE_PROGRAM:
-            keyboard_remote_settings[programming_key_type] = hex_escape(key);
-            roon.save_config("keyboard-remote-settings", keyboard_remote_settings);
+
+            roon.set_setting(programming_key_type, hex_escape(key));
             key_string_methods = null; // invalidate key_string_methods so it will be rebuilt
+
             update_state();
+
             break;
 
     }
 
 }
 
-function play_pause() {
-    display_brief_status("Play/Pause");
-    transport.control(keyboard_remote_settings["controlled_zone"].output_id, "playpause");
+// Carry out an Roon transport action
+function transport_action(action) {
+    return function() {
+        roon.control_transport(action);
+    }
 }
 
-function previous() {
-    display_brief_status("Previous");
-    transport.control(keyboard_remote_settings["controlled_zone"].output_id, "previous");
-}
-
-function next() {
-    display_brief_status("Next");
-    transport.control(keyboard_remote_settings["controlled_zone"].output_id, "next");
-}
-
+// Initialise Roon object, current state and keypress event handling, then start Roon
+// discovery
 function init() {
-    keyboard_remote_settings = roon.load_config("keyboard-remote-settings");
 
-    if (keyboard_remote_settings == null) {
-        keyboard_remote_settings = {
+    // Create the default settings to be used if there are no saved settings
+    var default_settings = {
             controlled_zone: null
         };
-        Object.keys(key_types).forEach(function(key_type) {
-            keyboard_remote_settings[key_type] = "";
-        });
-    };
+    Object.keys(key_types).forEach(function(key_type) {
+        default_settings[key_type] = "";
+    });
 
-    roon.save_config("keyboard-remote-settings", keyboard_remote_settings);
+    // Initialise roon, providing the config layout, default settings and a
+    // callback method to update our state when we're paired/unpaired from the 
+    // core, or settings are saved in the Roon UI
+    roon = new Roon(make_layout(), update_state, default_settings);
+
+    // Initialise program state
     update_state();
 
-    // Setup key capture from stdin
+    // Set up event handling for key capture from stdin
     var stdin = process.stdin;
     stdin.setRawMode(true);
     stdin.resume();
     stdin.setEncoding('utf8');
     stdin.on('data', key_press);
+
 }
 
-
-var svc_settings = new RoonApiSettings(roon, {
-    get_settings: function(cb) {
-        cb(makelayout(keyboard_remote_settings));
-    },
-    save_settings: function(req, isdryrun, settings) {
-        let l = makelayout(settings.values);
-        req.send_complete(l.has_error ? "NotValid" : "Success", { settings: l });
-
-        if (!isdryrun) {
-            keyboard_remote_settings = l.values;
-            svc_settings.update_settings(l);
-            roon.save_config("keyboard-remote-settings", keyboard_remote_settings);
-            update_state();
-        }
-
-    }
-});
-
-var svc_status = new RoonApiStatus(roon);
-
-roon.init_services({
-    required_services:   [ RoonApiTransport ],
-    provided_services:   [ svc_settings, svc_status ]
-});
-
 init();
-roon.start_discovery();
