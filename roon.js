@@ -103,13 +103,13 @@ function Roon(config_layout_, update_state, default_settings) {
   // Initialise status service
   svc_status = new RoonApiStatus(roon_api)
 
-  // Declare our required and provided services
+  // Declare our required and provided services to Roon
   roon_api.init_services({
       required_services:   [ RoonApiTransport ],
       provided_services:   [ svc_settings, svc_status ]
   });
 
-  // Allow Roon to start recovery
+  // Allow Roon to start discovery
   roon_api.start_discovery();
 }
 

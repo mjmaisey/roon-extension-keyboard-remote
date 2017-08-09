@@ -102,7 +102,7 @@ function update_state() {
 
                 current_state = STATE_AWAITING_ZONE_CONFIGURATION;
 
-            } else { // Paired, keys bound, controlled zone set - enter controll mode
+            } else { // Paired, keys bound, controlled zone set - enter control mode
 
                 current_state = STATE_CONTROLLING_ZONE;
 
@@ -195,15 +195,14 @@ function key_press(key) {
 
 }
 
-// Carry out an Roon transport action
+// Carry out a Roon transport action
 function transport_action(action) {
     return function() {
         roon.control_transport(action);
     }
 }
 
-// Initialise Roon object, current state and keypress event handling, then start Roon
-// discovery
+// Initialise Roon, current state and keypress event handling
 function init() {
 
     // Create the default settings to be used if there are no saved settings
