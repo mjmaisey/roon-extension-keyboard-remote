@@ -205,6 +205,17 @@ function transport_action(action) {
 // Initialise Roon, current state and keypress event handling
 function init() {
 
+    // Check to see if a working directory has been passed as a command line option
+    if (process.argv.length > 2) {
+        let working_dir = process.argv[2];
+        try {
+            process.chdir(working_dir);
+        } catch (err) {
+            console.log("Could not change directory to " + working_dir + ", exiting.");
+            process.exit();
+        }
+    }
+
     // Create the default settings to be used if there are no saved settings
     var default_settings = {
             controlled_zone: null
