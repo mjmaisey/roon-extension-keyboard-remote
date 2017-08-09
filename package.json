@@ -4,7 +4,7 @@
     "description": "Roon Extension to control playback based on key presses",
     "main": "keyboard-remote.js",
     "author": "Martin Maisey",
-    "license": "Apache-2.0",
+    "license": "MIT",
     "dependencies": {
         "node-roon-api": "github:roonlabs/node-roon-api",
         "node-roon-api-settings": "github:roonlabs/node-roon-api-settings",
