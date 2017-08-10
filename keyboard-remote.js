@@ -120,7 +120,7 @@ function update_state() {
 
 }
 
-// Update the status text in Roon based on the current state
+// Update the status text in Roon and console based on the current state
 function set_status_text() {
 
     let status_text = null;
@@ -143,6 +143,7 @@ function set_status_text() {
             break;
     }
 
+    console.log(status_text);
     roon.set_status_text(status_text);
 }
 
@@ -204,6 +205,8 @@ function transport_action(action) {
 
 // Initialise Roon, current state and keypress event handling
 function init() {
+
+    console.log("roon-extension-keyboard-remote started");
 
     // Check to see if a working directory has been passed as a command line option
     if (process.argv.length > 2) {
