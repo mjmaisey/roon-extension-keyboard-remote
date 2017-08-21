@@ -3,22 +3,24 @@
 Roon Extension to control playback via keypresses, and hence via any remote control that can
 generate a keypress.
 
-IMPORTANT: 
+**IMPORTANT:**
 
 * After installation, the main systemd service for this extension will autostart and start receiving keypresses on the 
   second virtual console. A second service will, five seconds after boot, automatically switch the active virtual console to 
   the second one. If you need to login directly on the physical console, you will need to switch back to the first to see
   a login prompt. To do this, use Alt+F1, or Alt+Left. To switch back and resume remote control, use Alt+F2, or Alt+Right.
 
-* Ensure that you *do not* have 'PSU noise reduction' enabled in dietpi-config > Audio options. If you do, this will disable 
-  HDMI, including the virtual console, and boot-up will not complete, so you won't be able to SSH in. If you manage to find
-  yourself in this situation, to recover, take out the MicroSD card and, on another computer edit dietpi.txt. Find the line
+* Ensure that you **have not** enabled 'PSU noise reduction' enabled in dietpi-config > Audio options. It isn't on by default,
+  so you would have to have done this deliberately. If it is enabled, it will disable HDMI, including the virtual console. 
+  Boot-up will not complete, because this extension needs the console to operate, and you won't be able to SSH in. If you 
+  find yourself in this situation, to recover, take out the MicroSD card and, on another computer edit dietpi.txt in the
+  root directory. Find the line:
   
   ```
   rpi_hdmi_output=0
   ```
   
-  and change it to 
+  and change it to:
   
   ```
   rpi_hdmi_output=1
