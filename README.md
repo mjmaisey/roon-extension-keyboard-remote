@@ -13,7 +13,7 @@ generate a keypress.
 * Ensure that you **have not** enabled 'PSU noise reduction' enabled in dietpi-config > Audio options. It isn't on by default,
   so you would have to have done this deliberately. If it is enabled, it will disable HDMI, including the virtual console. 
   Boot-up will not complete, because this extension needs the console to operate, and you won't be able to SSH in. If you 
-  find yourself in this situation, to recover, take out the MicroSD card and, on another computer edit dietpi.txt in the
+  find yourself in this situation, to recover take out the MicroSD card and, on another computer, edit dietpi.txt in the
   root directory. Find the line:
   
   ```
