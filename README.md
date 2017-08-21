@@ -64,5 +64,5 @@ generate a keypress.
 If you do not have particular keys on your control device, going into the settings and entering a dash into
 the fields for the relevant key and pressing 'Save' will result in the key being skipped during programming.
 
-If you which to reprogram any key, simply delete the contents of the field for the key(s) in the extension
+If you wish to reprogram any key, simply delete the contents of the field for the key(s) in the extension
 Settings and it will go back into programming mode for the keys.
