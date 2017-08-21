@@ -43,3 +43,26 @@ generate a keypress.
 ## Using a Bluetooth keyboard
 
 1. Enable Bluetooth in dietpi-config > Advanced
+
+------------
+
+## Enabling and programming the extension
+
+1. Open Roon on any device (PC, Mac, iPad etc.)
+
+1. Go to Settings > Extensions
+
+1. Enable the Extension. The status should change to 'Program - press Next'
+
+1. Press the relevant keys on your control device (currently Next, Previous, Play/Pause) in response to the
+   prompts
+
+1. Go into the extension settings and select your controlled zone, then click 'Save'
+
+1. The status should now read 'Controlling zone <zone name>'. Enjoy.
+
+If you do not have particular keys on your control device, going into the settings and entering a dash into
+the fields for the relevant key and pressing 'Save' will result in the key being skipped during programming.
+
+If you which to reprogram any key, simply delete the contents of the field for the key(s) in the extension
+Settings and it will go back into programming mode for the keys.
