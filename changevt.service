@@ -1,0 +1,11 @@
+[Unit]
+Description=Remote control of Roon via keyboard
+After=roon-extension-keyboard-remote.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/roon-extension-keyboard-remote/changevt.sh
+
+[Install]
+WantedBy=default.target
+

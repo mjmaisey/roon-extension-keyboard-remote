@@ -1,0 +1,16 @@
+[Unit]
+Description=Remote control of Roon via keyboard
+After=getty@tty2.service
+#After=dietpi-boot.service
+
+[Service]
+Type=idle
+ExecStart=/usr/bin/node /opt/roon-extension-keyboard-remote /etc/roon-extension-keyboard-remote
+#ExecStartPost=/bin/chvt 2
+StandardInput=tty
+TTYPath=/dev/tty2
+TTYReset=yes
+TTYVHangup=yes
+
+[Install]
+WantedBy=default.target
