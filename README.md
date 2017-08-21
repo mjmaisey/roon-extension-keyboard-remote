@@ -5,51 +5,41 @@ generate a keypress.
 
 ------------
 
-## Installation
+## Installation on DietPi
 
-1. Install Node.js from https://nodejs.org.
-
-   * On Windows, install from the above link.
-   * On Mac OS, you can use [homebrew](http://brew.sh) to install Node.js.
-   * On Linux, you can use your distribution's package manager, but make sure it installs a recent Node.js. Otherwise just install from the above link.
-
-   Make sure you are running node 5.x or higher. This can be verified on the command line with the following command:
-
-   ```sh
-   node -v
-   ```
-
-   For example:
-
-   ```sh
-   $ node -v
-   v5.10.1
-   ```
-
-1. Install Git from https://git-scm.com/downloads.
-   * Following the instructions for the Operating System you are running.
+1. Install Node.js from dietpi-software > Software Additional 
 
 1. Download the Keyboard Remote extension.
 
-   * Go to the [roon-extension-keyboard-remote](https://github.com/mjmaisey/roon-extension-keyboard-remote) page on [GitHub](https://github.com).
-   * Click the green 'Clone or Download' button and select 'Download ZIP'.
-
-1. Extract the zip file in a local folder.
-
-1. Change directory to the extension in the local folder:
-    ```
-    cd <local_folder>/roon-extension-keyboard-remote
-    ```
-    *Replace `<local_folder>` with the local folder path.*
+   ```bash
+   cd /opt
+   git clone https://github.com/mjmaisey/roon-extension-keyboard-remote.git
+   ```
 
 1. Install the dependencies:
     ```bash
+    cd roon-extension-keyboard-remote
     npm install
     ```
 
-1. Run it!
+1. Install to start on the second virtual console automatically on startup
     ```bash
-    node .
+    mkdir /etc/roon-extension-keyboard-remote
+    cp changevt.service roon-extension-keyboard-remote.service /lib/systemd/system
+    systemctl enable roon-extension-keyboard-remote.service
+    systemctl enable changevt.service
     ```
 
-    The extension should appear in Roon now. See Settings->Setup->Extensions and you should see it in the list. If you have multiple Roon Cores on the network, all of them should see it.
+1. Reboot
+    ```bash
+    shutdown -r now
+    ```
+
+    The extension should appear in Roon now. See Settings->Setup->Extensions and you should see it in the list.
+
+
+------------
+
+## Using a Bluetooth keyboard
+
+1. Enable Bluetooth in dietpi-config > Advanced
