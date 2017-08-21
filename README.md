@@ -6,7 +6,7 @@ generate a keypress.
 IMPORTANT: 
 
 * After installation, the main systemd service for this extension will autostart and start receiving keypresses on the 
-  second virtual console. A second service will, after five seconds, automatically switch the active virtual console to 
+  second virtual console. A second service will, five seconds after boot, automatically switch the active virtual console to 
   the second one. If you need to login directly on the physical console, you will need to switch back to the first to see
   a login prompt. To do this, use Alt+F1, or Alt+Left. To switch back and resume remote control, use Alt+F2, or Alt+Right.
 
