@@ -12,6 +12,7 @@ generate a keypress.
 1. Download the Keyboard Remote extension.
 
    ```bash
+   apt-get install git
    cd /opt
    git clone https://github.com/mjmaisey/roon-extension-keyboard-remote.git
    ```
