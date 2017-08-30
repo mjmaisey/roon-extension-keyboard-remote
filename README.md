@@ -1,7 +1,9 @@
 # roon-extension-keyboard-remote
 
 Roon Extension to control playback via keypresses, and hence via any remote control that can
-generate a keypress. This includes Harmony Hubs - although the setup process is a little fiddly.
+generate a keypress. This includes Harmony Hubs and many cost-effective RF remotes. It's 
+designed to be installed on (and probably makes most sense with) players running DietPi and 
+Roon Bridge, although may work on other Linux platforms with a recent NodeJS and systemd.
 
 **IMPORTANT:**
 
@@ -28,6 +30,8 @@ generate a keypress. This includes Harmony Hubs - although the setup process is 
   
   You will then be able to boot once with HDMI on. Log in, start dietpi-config, go to Audio options and turn off 
   'PSU noise reduction' to fix the problem.
+
+* If you're installing this extension on multiple 
 
 ------------
 
@@ -67,7 +71,7 @@ generate a keypress. This includes Harmony Hubs - although the setup process is 
 
 ------------
 
-## Using a Bluetooth keyboard
+## Using a Bluetooth keyboard with a Raspberry Pi
 
 1. Enable Bluetooth in dietpi-config > Advanced
 
@@ -95,7 +99,7 @@ generate a keypress. This includes Harmony Hubs - although the setup process is 
 
 ------------
 
-## Using a Harmony Hub as a bluetooth keyboard
+## Using a Harmony Hub as a bluetooth keyboard for a Raspberry Pi
 
 1. Create a new 'Windows PC' device in the Harmony app
 
