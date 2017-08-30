@@ -1,7 +1,7 @@
 # roon-extension-keyboard-remote
 
 Roon Extension to control playback via keypresses, and hence via any remote control that can
-generate a keypress.
+generate a keypress. This includes Harmony Hubs - although the setup process is a little fiddly.
 
 ------------
 
@@ -43,6 +43,40 @@ generate a keypress.
 ## Using a Bluetooth keyboard
 
 1. Enable Bluetooth in dietpi-config > Advanced
+
+1. Run bluetoothctl and pair the Bluetooth keyboard, which should look something like the following (with 
+   different device addresses, of course)
+    ```
+    [NEW] Controller 11:22:33:44:55:66 dietpi [default]
+    [bluetooth] agent on
+    [bluetooth] default-agent
+    [bluetooth] scan on
+    [CHG] Controller 11:22:33:44:55:66 Discovering: yes
+    [NEW] Device AA:BB:CC:DD:EE:FF Harmony Keyboard
+    [bluetooth] pair AA:BB:CC:DD:EE:FF
+    Attempting to pair with AA:BB:CC:DD:EE:FF
+    Pairing successful
+    [bluetooth] connect AA:BB:CC:DD:EE:FF
+    Attempting to connect to AA:BB:CC:DD:EE:FF
+    Connection successful
+    [bluetooth] trust AA:BB:CC:DD:EE:FF
+    Changing AA:BB:CC:DD:EE:FF trust succeeded
+    [bluetooth] exit
+    ```
+
+------------
+
+## Using a Harmony Hub as a bluetooth keyboard
+
+1. Create a new 'Windows PC' device in the Harmony app
+
+1. Create a new Activity using the device in the Harmony app (and any amp you'd like to control). This 
+   should then prompt you to pair, at least in the iOS app - this doesn't seem to work in the Harmony
+   desktop app. Do the pairing on the Raspberry Pi as above.
+
+1. You'll need to alter the buttons on the activity, as Harmony's default media key mappings only seem to
+   result in a null keypress on a Raspberry Pi. I found space for play/pause and left/right direction 
+   keys for previous and next track respectively work well.
 
 ------------
 
