@@ -31,7 +31,9 @@ Roon Bridge, although may work on other Linux platforms with a recent NodeJS and
   You will then be able to boot once with HDMI on. Log in, start dietpi-config, go to Audio options and turn off 
   'PSU noise reduction' to fix the problem.
 
-* If you're installing this extension on multiple 
+* If you're installing this extension on multiple endpoints, you'll need to set different hostnames using
+  dietpi-config > Security Options > Change Hostname. This way, multiple extensions (with the hostname in brackets)
+  will appear in the Roon > Settings > Extensions, enabling independent configuration.
 
 ------------
 
