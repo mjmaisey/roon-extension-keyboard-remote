@@ -76,7 +76,9 @@ generate a keypress. This includes Harmony Hubs - although the setup process is 
     ```
     [NEW] Controller 11:22:33:44:55:66 dietpi [default]
     [bluetooth] agent on
+    Agent registered
     [bluetooth] default-agent
+    Default agent request successful
     [bluetooth] scan on
     [CHG] Controller 11:22:33:44:55:66 Discovering: yes
     [NEW] Device AA:BB:CC:DD:EE:FF Harmony Keyboard
